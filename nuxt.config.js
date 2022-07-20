@@ -1,4 +1,4 @@
-import colors from 'vuetify/es5/util/colors'
+import i18n from './plugins/i18n'
 
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
@@ -28,6 +28,13 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~plugins/vuetify.js',
+    '~/plugins/components.js',
+    '~/plugins/mixin.js',
+    '~/plugins/dialogs.js',
+    '~/plugins/upload-component.js',
+    '~/plugins/alerts.js',
+    '~/plugins/snackbars.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -35,17 +42,22 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
+    // https://go.nuxtjs.dev/typescript
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
-  ],
+    '@nuxtjs/moment'
+],
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
-  ],
+    '@nuxtjs/i18n',
+    '@nuxtjs/toast',
+    'vue-scrollto/nuxt',
+    'nuxt-material-design-icons-iconfont',
+    '@nuxtjs/firebase'
+],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
@@ -59,25 +71,58 @@ export default {
       lang: 'en'
     }
   },
-
-  // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
-  vuetify: {
-    customVariables: ['~/assets/variables.scss'],
-    theme: {
-      dark: true,
-      themes: {
-        dark: {
-          primary: colors.blue.darken2,
-          accent: colors.grey.darken3,
-          secondary: colors.amber.darken3,
-          info: colors.teal.lighten1,
-          warning: colors.amber.base,
-          error: colors.deepOrange.accent4,
-          success: colors.green.accent3
-        }
-      }
+  i18n: {
+    locales: [
+        { code: 'en', iso: 'en-US', name: 'English', file: 'en.json' },
+        { code: 'es', iso: 'es-ES', name: 'Español', file: 'es.json' },
+    ],
+    defaultLocale: 'es',
+    seo: true,
+    lazy: true,
+    langDir: '@/locales',
+    vueI18n: i18n,
+    detectBrowserLanguage: {
+        useCookie: true,
+        cookieKey: 'i18n_redirected',
+        onlyOnRoot: true, // recommended
     }
   },
+  // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
+  firebase: {
+    config: {
+      apiKey: "AIzaSyBrOqBqKO6l11JS9MSPXAy10025Bh8sXWE",
+      authDomain: "tradehouse-adm.firebaseapp.com",
+      databaseURL: "https://tradehouse-adm-default-rtdb.firebaseio.com",
+      projectId: "tradehouse-adm",
+      storageBucket: "tradehouse-adm.appspot.com",
+      messagingSenderId: "196713403311",
+      appId: "1:196713403311:web:f48e1f2613c4e570ff555a",
+      measurementId: "G-71K0WLHNZJ"
+     },
+    services: {
+        auth: true,
+        firestore: true,
+        storage: true,
+        messaging: true,
+        performance: true,
+        analytics: true,
+        database: true,
+        functions: {
+            location: 'us-central1',
+            emulatorPort: 5001,
+        }
+    }
+},vuetify: {
+  customVariables: ['~/assets/variables.scss'],
+  treeShake: true,
+  options: {
+      customProperties: true
+  }
+},
+moment: {
+  defaultLocale: 'es',
+  locales: ['es']
+},
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
