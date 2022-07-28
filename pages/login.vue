@@ -37,15 +37,22 @@ export default {
     },
     methods: {
         login() {
-            let that = this
-            this.$fire.auth.signInWithEmailAndPassword(this.auth.email, this.auth.password)
-                .catch(function (error) {
-                    that.snackbarText = error.message
-                    that.snackbar = true
-                }).then((user) => {
+            this.loading = true
+            this.$store.dispatch('auth/signInWithPopup', this.auth.email, this.auth.password).then(
+                result => { 
+                    this.$snackbar.show({
+                        text: result,
+                        color: 'success'
+                    })
+                    this.$router.push('/')
+                    this.loading = false
                     this.$fire.analytics.logEvent("login", 1);
-                    //we are signed in
-                    $nuxt.$router.push('/')
+                }, error => {
+                    this.loading = false
+                    this.$snackbar.show({
+                        text: error,
+                        color: 'error'
+                    })  
                 })
         },
         forgotPassword() {

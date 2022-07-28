@@ -8,9 +8,9 @@ export const states = {
 
 export const actions = {
     signInWithPopup({commit}, payload) {
-        const provider = new this.$fire.auth.app.firebase_.auth.GoogleAuthProvider()
+        console.log(payload)
         return new Promise((resolve, reject) => {
-            this.$fire.auth.signInWithPopup(provider).then((result) => {
+            this.$fire.auth.signInWithEmailAndPassword(payload).then((result) => {
                 // This gives you a Google Access Token. You can use it to access the Google API.
                 const credential = result.credential
                 const token = credential.accessToken;
