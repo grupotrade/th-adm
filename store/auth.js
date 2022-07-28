@@ -1,4 +1,4 @@
-const default_role = 'generador'
+const default_role = 'public'
 
 export const states = {
     version: 2,
@@ -8,49 +8,35 @@ export const states = {
 
 export const actions = {
     signInWithPopup({commit}, payload) {
-        console.log(payload)
         return new Promise((resolve, reject) => {
-            this.$fire.auth.signInWithEmailAndPassword(payload).then((result) => {
-                // This gives you a Google Access Token. You can use it to access the Google API.
-                const credential = result.credential
-                const token = credential.accessToken;
+            this.$fire.auth.signInWithEmailAndPassword(payload.email, payload.password).then((result) => {
                 // The signed-in user info.
                 const user = result.user;
+                console.log(user)
                 const collection = this.$fire.firestore.collection('users')
-                const collectionGroup = this.$fire.firestore.collection('groups')
                 collection.doc(user.uid).get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data()
                         if (!data.enable) {
                             reject("No autorizado")
                         } else {
-                            collectionGroup.doc(data.group).get().then((docGroup) => {
-                                const dataGroup = docGroup.data()
-
-                                this.$fire.analytics.setUserId(user.uid);
-                                this.$fire.analytics.setUserProperties({
-                                    account_type: "Basic" // can help you to define audiences
-                                });
+                              //  this.$fire.analytics.setUserId(user.uid);
                                 commit('setUser', {
                                     uid: user.uid,
                                     apiKey: user.apiKey,
-                                    displayName: user.displayName,
+                                    displayName: user.email,
                                     email: user.email,
-                                    role: data.role,
-                                    group: dataGroup
+                                    role: default_role
                                 })
-
-                                commit('setToken', token)
                                 resolve("Ingreso autorizado.")
-                            })
+                                location.replace('/')
                         }
                     } else {
                         this.$fire.firestore.collection("users").doc(user.uid).set({
-                            displayName: user.displayName,
+                            displayName: user.email,
                             email: user.email,
                             role: default_role,
                             enable: false,
-                            group: null,
                             deleted_at: ""
                         })
                         .then(() => {
@@ -67,7 +53,7 @@ export const actions = {
                 // Handle Errors here.
                 const errorCode = error.code;
                 const errorMessage = error.message;
-                console.log('no oka')
+                console.log(errorCode + errorMessage)
                 reject("Error de autenticación")
             });
         })
@@ -75,7 +61,6 @@ export const actions = {
     signOut({commit}, payload) {
         this.$fire.auth.signOut().then(() => {
             commit('setUser', null)
-            commit('setToken', null)
         }).catch((error) => {
         // An error happened.
         });

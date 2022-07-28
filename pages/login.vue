@@ -25,6 +25,7 @@
 <script>
 export default {
     layout: 'clean',
+    middleware: 'noauth',
     data() {
         return {
             snackbar: false,
@@ -38,8 +39,13 @@ export default {
     methods: {
         login() {
             this.loading = true
-            this.$store.dispatch('auth/signInWithPopup', this.auth.email, this.auth.password).then(
+            const payload = {
+                email: this.auth.email,
+                password: this.auth.password
+            }
+            this.$store.dispatch('auth/signInWithPopup', payload).then(
                 result => { 
+                    console.log('adentro')
                     this.$snackbar.show({
                         text: result,
                         color: 'success'

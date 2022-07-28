@@ -205,7 +205,7 @@ export default {
                 await issueIdRef.on(
                     'value', (snapshot) => {
                         const data = snapshot.val();
-                        this.issueId = data.current
+                     //   this.issueId = data.current
                     });
 
             } catch (e) {
